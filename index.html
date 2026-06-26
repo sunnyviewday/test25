@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Mobilcard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            background-color: #008a00;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Empty white status bar area */
+        .status-bar {
+            height: 10px;
+            background-color: white;
+            width: 100%;
+            flex-shrink: 0;
+        }
+        
+        /* Main green container */
+        .main-container {
+            flex: 1;
+            background-color: #008a00;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Sticky green header with X only */
+        .green-header {
+            background-color: #008a00;
+            padding: 10px 16px 0px 16px;
+            flex-shrink: 0;
+        }
+        
+        /* Close button - positioned at top right of green area */
+        .close-button {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 0px;
+        }
+        
+        .close-button svg {
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+        }
+        
+        /* Scrollable content area */
+        .scroll-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 8px 16px 24px 16px;
+        }
+        
+        /* Active journey section - now in scrollable area */
+        .active-journey {
+            display: flex;
+            flex-direction: column;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .active-journey-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        
+        /* First card - Ticket info */
+        .ticket-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-top: 12px;
+            margin-bottom: 16px;
+        }
+        
+        /* Mobilcard header image */
+        .mobilcard-header {
+            margin-bottom: 16px;
+        }
+        
+        .mobilcard-header img {
+            max-width: 170px;
+            height: auto;
+        }
+        
+        .label {
+            font-size: 14px;
+            color: #888888;
+            font-weight: 400;
+            margin-bottom: 2px;
+        }
+        
+        .date-time {
+            font-size: 22px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+        
+        .ticket-holder-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 20px;
+            letter-spacing: -0.3px;
+        }
+        
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        .journey-label {
+            font-size: 14px;
+            color: #888888;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+        
+        .route-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background-color: #3a3a3c;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .route-badge span {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .route-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: #000000;
+            line-height: 1.3;
+            letter-spacing: -0.3px;
+        }
+        
+        /* Second card - QR code */
+        .qr-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 420px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .qr-code {
+            width: 280px;
+            height: 280px;
+            object-fit: contain;
+            margin-bottom: 24px;
+        }
+        
+        .check-validity-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+        
+        .check-validity-btn img {
+            max-width: 200px;
+            height: auto;
+            display: block;
+        }
+        
+        .check-validity-btn:active {
+            opacity: 0.8;
+        }
+        
+        /* Video container */
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border-radius: 16px;
+        }
+        
+        .video-container.active {
+            display: flex;
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        
+        /* Hide QR content when video is playing */
+        .qr-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        /* Safe area padding for iPhone */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .scroll-content {
+                padding-bottom: calc(24px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Empty white status bar -->
+    <div class="status-bar"></div>
+    
+    <!-- Main green container -->
+    <div class="main-container">
+        <!-- Sticky green header -->
+        <div class="green-header">
+            <!-- Close button - at top of green area -->
+            <div class="close-button">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="white"/>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Scrollable content -->
+        <div class="scroll-content">
+        
+        <!-- Active journey timer -->
+        <div class="active-journey">
+            <span class="active-journey-text">Active journey <span id="journeyTimer">10:05</span></span>
+        </div>
+        
+        <!-- Ticket info card -->
+        <div class="ticket-card">
+            <!-- Mobilcard header image -->
+            <div class="mobilcard-header">
+                <img src="IMG_6271.jpg" alt="Mobilcard 1 day">
+            </div>
+            
+            <div class="label">Validated</div>
+            <div class="date-time">26.06.2026, 05:41</div>
+            
+            <div class="label">Ticket holder</div>
+            <div class="ticket-holder-name">Vadym Yeremiichuk</div>
+            
+            <div class="divider"></div>
+            
+            <div class="journey-label">Journey planner</div>
+            <div class="route-badge">
+                <span>R</span>
+            </div>
+            <div class="route-text">Bahnhof Brenner - Bahnhof –<br>Meran</div>
+        </div>
+        
+        <!-- QR code card -->
+        <div class="qr-card">
+            <div class="qr-container" id="qrContainer">
+                <img src="imagecode.png" alt="QR Code" class="qr-code">
+                <button class="check-validity-btn" id="checkValidityBtn">
+                    <img src="IMG_6276.jpg" alt="Check validity">
+                </button>
+            </div>
+            
+            <div class="video-container" id="videoContainer">
+                <video id="animationVideo" playsinline webkit-playsinline muted>
+                    <source src="animation_final.mp4" type="video/mp4">
+                    <source src="animation_final.mov" type="video/quicktime">
+                </video>
+            </div>
+        </div>
+        </div>
+    </div>
+    
+    <script>
+        // Journey timer functionality
+        let totalSeconds = 10 * 60 + 5; // Starting at 10:05 (605 seconds)
+        const timerElement = document.getElementById('journeyTimer');
+        
+        function updateTimer() {
+            totalSeconds++;
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            if (hours > 0) {
+                timerElement.textContent = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        // Update timer every second
+        setInterval(updateTimer, 1000);
+        
+        // Video functionality
+        const checkValidityBtn = document.getElementById('checkValidityBtn');
+        const qrContainer = document.getElementById('qrContainer');
+        const videoContainer = document.getElementById('videoContainer');
+        const animationVideo = document.getElementById('animationVideo');
+        
+        checkValidityBtn.addEventListener('click', function() {
+            // Hide QR code and button
+            qrContainer.classList.add('hidden');
+            
+            // Show video container
+            videoContainer.classList.add('active');
+            
+            // Play video
+            animationVideo.currentTime = 0;
+            animationVideo.play().catch(function(error) {
+                console.log('Video play error:', error);
+                // If video fails to play, show QR code again after a delay
+                setTimeout(showQRCode, 3000);
+            });
+        });
+        
+        // When video ends, show QR code again
+        animationVideo.addEventListener('ended', function() {
+            showQRCode();
+        });
+        
+        function showQRCode() {
+            // Hide video container
+            videoContainer.classList.remove('active');
+            
+            // Show QR code and button
+            qrContainer.classList.remove('hidden');
+        }
+        
+        // Handle video errors
+        animationVideo.addEventListener('error', function() {
+            console.log('Video error');
+            showQRCode();
+        });
+    </script>
+</body>
+</html>
